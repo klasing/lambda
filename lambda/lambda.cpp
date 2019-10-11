@@ -3,10 +3,50 @@
 
 #include "pch.h"
 #include <iostream>
+#include <conio.h>
+#include <string>
+#include <memory>
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	std::cout << " 1  2     3       4      5     6\n";
+	std::cout << " |  |     |       |      |     |\n";
+	std::cout << "[=]( ) mutable throw() -> int { }\n";
+	std::cout << "\n";
+	std::cout << "1) capture clause (lambda-introducer)\n";
+	std::cout << "2) parameter list (lambda declarator)\n";
+	std::cout << "3) mutable specification (optional)\n";
+	std::cout << "4) exception specification (optional)\n";
+	std::cout << "5) trailing-return-type (optional)\n";
+	std::cout << "6) lambda body\n";
+	std::cout << "\n";
+
+	std::string str = "capture", str_return = "";
+	auto breturn = [&str]() mutable -> bool
+	{
+		str = "captured";
+		return true;
+	} ();
+	std::cout << "A) modify capture...............: " << str << std::endl;
+
+	auto pstr = std::make_unique<std::string>(str);
+	auto breturn_ = [ptr = std::move(pstr)](std::string& str_return) -> bool
+	{
+		str_return = *ptr;
+		return true;
+	} (str_return);
+	std::cout << "B) bring capture to parameter...: " << str_return << std::endl;
+
+	auto lambda = [](std::string str_return)
+	{
+		std::cout << "C) using function pointer.......: " << str_return << std::endl;
+	};
+	void (*pfunc)(std::string) = lambda;
+	pfunc(str_return);
+
+	std::cout << "\n";
+	std::cout << "Hit any key ...";
+	int i = _getch();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
