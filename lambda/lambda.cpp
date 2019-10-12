@@ -2,12 +2,16 @@
 //
 
 #include "pch.h"
-#include <iostream>
 #include <conio.h>
-#include <string>
-#include <memory>
+#include <exception>
 #include <functional>
+#include <iostream>
+#include <memory>
+#include <string>
 
+//****************************************************************************
+//*                     func
+//****************************************************************************
 int func(const char& a
 	, const char& b
 	, int i
@@ -20,6 +24,9 @@ void func1(int i)
 {
 	std::cout << "i: " << i << std::endl;
 };
+//****************************************************************************
+//*                     functor
+//****************************************************************************
 struct functor
 {
 	void operator()(int i)
@@ -27,6 +34,9 @@ struct functor
 		std::cout << "i: " << i << std::endl;
 	}
 };
+//****************************************************************************
+//*                     FunctorClass
+//****************************************************************************
 struct FunctorClass
 {
 	void func(int i)
@@ -34,6 +44,28 @@ struct FunctorClass
 		std::cout << "i: " << i << std::endl;
 	}
 };
+//****************************************************************************
+//*                     wrap
+//****************************************************************************
+template <typename T>
+T wrap(T a, T b)
+{
+	auto f = [](T a, T b) -> T { return a + b; };
+	return f(a, b);
+}
+//****************************************************************************
+//*                     an_exception
+//****************************************************************************
+struct an_exception : public std::exception
+{
+	const char* what() const throw()
+	{
+		return "an exception is thrown";
+	}
+};
+//****************************************************************************
+//*                     main
+//****************************************************************************
 int main()
 {
 	std::cout << " 1  2     3       4      5     6\n";
@@ -86,7 +118,7 @@ int main()
 	// a lambda expression is not allowed in a constant expression
 	// (so there will be undefined behaviour, i assume)
 	/*constexpr*/ auto a = [x, y]() { return x * y; };
-	std::cout << "   a...: " << z << std::endl;
+	std::cout << "   a...: " << a() << std::endl;
 
 	std::cout << "EXAMPLE 1\n";
 	std::cout << "assign the lambda expression that adds two numbers to an auto variable\n";
@@ -108,19 +140,44 @@ int main()
 
 	std::cout << "EXAMPLE 3\n";
 	// use a lambda expression as a paramter in a function
+	std::cout << "3.A) use a lambda expression as a parameter in a function\n";
 	auto f3 = [](int a, int b) -> int { return a + b; };
 	func('a', 'b', f3(a_, b_));
 	// function object points to function
+	std::cout << "3.B) function object points to function\n";
 	std::function<void(int)> f4 = func1;
 	f4(1);
 	// function object points to functor
+	std::cout << "3.C) function object points to functor\n";
 	f4 = functor();
 	f4(2);
 	// function object points to member function
+	std::cout << "3.D) function object points to member function\n";
 	const FunctorClass functor_object;
 	using std::placeholders::_1;
 	f4 = std::bind(&FunctorClass::func, functor_object, _1);
 	f4(3);
+	// templated lambda
+	std::cout << "EXAMPLE 4\n";
+	std::cout << "templated lambda\n";
+	std::cout.precision(2);
+	std::cout << "1.05 + 2.05 = " << std::fixed << wrap(1.05, 2.05) << std::endl;
+	std::cout << "1 + 2 = " << (1, 2) << std::endl;
+	// exception handling in lambda
+	std::cout << "EXAMPLE 4\n";
+	std::cout << "exception handling in lambda\n";
+	auto f5 = []() throw()
+	{
+		try
+		{
+			throw an_exception();
+		}
+		catch (an_exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+	};
+	f5();
 
 	// spaceship comparison <=>, only in C++20
 
