@@ -106,7 +106,7 @@ int main()
 
 	std::cout << "E) constexpr\n";
 	// a constexpr is a expression that can be evaluated at compile time
-	// it has an advantage in performance over am expression that is evaluated at
+	// it has an advantage in performance over an expression that is evaluated at
 	// run time
 	int const x = 10, y = 20;
 	constexpr int z = x * y;
@@ -115,13 +115,13 @@ int main()
 	// this has to do with the conformance mode of the compiler (/std:c++17)
 	// the following lambda is a implicitly constexpr lambda
 	// the compiler marks the lambda with a comment:
-	// a lambda expression is not allowed in a constant expression
+	// "a lambda expression is not allowed in a constant expression"
 	// (so there will be undefined behaviour, i assume)
 	/*constexpr*/ auto a = [x, y]() { return x * y; };
 	std::cout << "   a...: " << a() << std::endl;
 
 	std::cout << "EXAMPLE 1\n";
-	std::cout << "assign the lambda expression that adds two numbers to an auto variable\n";
+	std::cout << "assign the lambda expression that adds two numbers\n";
 	auto f1 = [](int x, int y) { return x + y; };
 	std::cout << "1 + 2 = " << f1(1, 2) << std::endl;
 	std::cout << "assign the same lambda expression to a function object\n";
@@ -157,14 +157,16 @@ int main()
 	using std::placeholders::_1;
 	f4 = std::bind(&FunctorClass::func, functor_object, _1);
 	f4(3);
+
 	// templated lambda
 	std::cout << "EXAMPLE 4\n";
 	std::cout << "templated lambda\n";
 	std::cout.precision(2);
 	std::cout << "1.05 + 2.05 = " << std::fixed << wrap(1.05, 2.05) << std::endl;
-	std::cout << "1 + 2 = " << (1, 2) << std::endl;
+	std::cout << "1 + 2 = " << wrap(1, 2) << std::endl;
+
 	// exception handling in lambda
-	std::cout << "EXAMPLE 4\n";
+	std::cout << "EXAMPLE 5\n";
 	std::cout << "exception handling in lambda\n";
 	auto f5 = []() throw()
 	{
