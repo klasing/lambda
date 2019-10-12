@@ -8,6 +8,32 @@
 #include <memory>
 #include <functional>
 
+int func(const char& a
+	, const char& b
+	, int i
+)
+{
+	std::cout << a << " + " << b << " = " << i << std::endl;
+	return 0;
+}
+void func1(int i)
+{
+	std::cout << "i: " << i << std::endl;
+};
+struct functor
+{
+	void operator()(int i)
+	{
+		std::cout << "i: " << i << std::endl;
+	}
+};
+struct FunctorClass
+{
+	void func(int i)
+	{
+		std::cout << "i: " << i << std::endl;
+	}
+};
 int main()
 {
 	std::cout << " 1  2     3       4      5     6\n";
@@ -59,7 +85,7 @@ int main()
 	// the compiler marks the lambda with a comment:
 	// a lambda expression is not allowed in a constant expression
 	// (so there will be undefined behaviour, i assume)
-	constexpr auto a = [x, y]() { return x * y; };
+	/*constexpr*/ auto a = [x, y]() { return x * y; };
 	std::cout << "   a...: " << z << std::endl;
 
 	std::cout << "EXAMPLE 1\n";
@@ -82,7 +108,19 @@ int main()
 
 	std::cout << "EXAMPLE 3\n";
 	// use a lambda expression as a paramter in a function
-	// TODO
+	auto f3 = [](int a, int b) -> int { return a + b; };
+	func('a', 'b', f3(a_, b_));
+	// function object points to function
+	std::function<void(int)> f4 = func1;
+	f4(1);
+	// function object points to functor
+	f4 = functor();
+	f4(2);
+	// function object points to member function
+	const FunctorClass functor_object;
+	using std::placeholders::_1;
+	f4 = std::bind(&FunctorClass::func, functor_object, _1);
+	f4(3);
 
 	// spaceship comparison <=>, only in C++20
 
